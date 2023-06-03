@@ -18,23 +18,23 @@ class ImageGallery extends Component {
     query: PropTypes.string.isRequired,
   };
 
-  async onSearch () {
-    // imageApi.resetHits();
-    // const images = r.data.hits;
-    // imageApi.addHits(images);
+  async onSearch() {
+    imageApi.resetPageCounter();
     imageApi.searchQuery = this.props.query;
     this.setState({ loading: true });
     const res = await imageApi.fetchImages();
-    this.setState({ images: res.data.hits, loading: false });
-    imageApi.resetHits();
     imageApi.addHits(res.data.hits);
+    this.setState({ images: res.data.hits, loading: false });
   }
 
-  async onLoadMore(){
-    // this.setState({ loading: true });
+  onLoadMore = async () => {
+    this.setState({ loading: true });
     const res = await imageApi.fetchImages();
-    this.setState({ images: res.data.hits, loading: false });
-  }
+    this.setState(prevState => ({
+      images: [...prevState.images, ...res.data.hits],
+      loading: false,
+    }));
+  };
 
   async componentDidUpdate(prevProps, prevState) {
     if (prevProps.query !== this.props.query) {
@@ -46,7 +46,6 @@ class ImageGallery extends Component {
     const { images, loading } = this.state;
     return (
       <>
-        {loading && <Loader />}
         {images && (
           <>
             <ul className="ImageGallery">
@@ -56,7 +55,8 @@ class ImageGallery extends Component {
                 );
               })}
             </ul>
-            <Button handleLoadMore={this.onLoadMore}/>
+            {loading && <Loader />}
+            <Button handleLoadMore={this.onLoadMore} />
           </>
         )}
       </>
