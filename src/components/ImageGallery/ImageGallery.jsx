@@ -12,6 +12,7 @@ class ImageGallery extends Component {
   state = {
     images: null,
     loading: false,
+    endOfSearch: false,
   };
 
   static propTypes = {
@@ -19,21 +20,29 @@ class ImageGallery extends Component {
   };
 
   async onSearch() {
+    imageApi.resetHits();
     imageApi.resetPageCounter();
     imageApi.searchQuery = this.props.query;
     this.setState({ loading: true });
     const res = await imageApi.fetchImages();
     imageApi.addHits(res.data.hits);
     this.setState({ images: res.data.hits, loading: false });
+    if (imageApi.filterHits() === res.data.totalHits) {
+      this.setState({ endOfSearch: true });
+    }
   }
 
   onLoadMore = async () => {
     this.setState({ loading: true });
     const res = await imageApi.fetchImages();
+    imageApi.addHits(res.data.hits);
     this.setState(prevState => ({
       images: [...prevState.images, ...res.data.hits],
       loading: false,
     }));
+    if (imageApi.filterHits() === res.data.totalHits) {
+      this.setState({ endOfSearch: true });
+    }
   };
 
   async componentDidUpdate(prevProps, prevState) {
@@ -43,7 +52,7 @@ class ImageGallery extends Component {
   }
 
   render() {
-    const { images, loading } = this.state;
+    const { images, loading, endOfSearch } = this.state;
     return (
       <>
         {images && (
@@ -56,7 +65,7 @@ class ImageGallery extends Component {
               })}
             </ul>
             {loading && <Loader />}
-            <Button handleLoadMore={this.onLoadMore} />
+            {!endOfSearch && <Button handleLoadMore={this.onLoadMore} />}
           </>
         )}
       </>

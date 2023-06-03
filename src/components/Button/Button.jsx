@@ -1,11 +1,18 @@
+import PropTypes from 'prop-types';
 import './Button.scss';
 
-const Button = ({handleLoadMore}) => {
+const Button = ({ handleLoadMore }) => {
   return (
-    <button className="Button" onClick={handleLoadMore}>
-      Load more
-    </button>
+    <div className="ButtonWrapper">
+      <button className="Button" onClick={handleLoadMore}>
+        Load more
+      </button>
+    </div>
   );
+};
+
+Button.propTypes = {
+  handleLoadMore: PropTypes.func.isRequired,
 };
 
 export default Button;
