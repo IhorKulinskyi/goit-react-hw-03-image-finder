@@ -1,4 +1,6 @@
 import { Component } from 'react';
+import { toast } from 'react-toastify';
+import PropTypes from 'prop-types';
 import './Searchbar.scss';
 
 class SearchBar extends Component {
@@ -8,13 +10,22 @@ class SearchBar extends Component {
 
   handleChange = e => {
     const { value } = e.target;
-    this.setState({ query: value.trim() });
+    this.setState({ query: value.toLowerCase().trim() });
   };
 
   handleSubmit = e => {
     e.preventDefault();
-    if (this.state.query === '') {
-      alert('no query');
+    if (this.state.query.trim() === '') {
+      toast.error("Empty search input", {
+        position: "top-center",
+        autoClose: 1000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        });
       return;
     }
     this.props.onSubmit(this.state.query);
@@ -44,5 +55,9 @@ class SearchBar extends Component {
     );
   }
 }
+
+SearchBar.propTypes = {
+  onSubmit: PropTypes.func.isRequired,
+};
 
 export default SearchBar;

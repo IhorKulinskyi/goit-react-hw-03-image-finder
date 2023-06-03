@@ -1,32 +1,26 @@
 import { Component } from 'react';
+import { ToastContainer} from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import './App.scss';
 import SearchBar from 'components/Searchbar';
-import ImageApiService from 'services/imageApi';
-
-const imageApi = new ImageApiService();
+import ImageGallery from 'components/ImageGallery';
 
 class App extends Component {
   state = {
     searchQuery: '',
-    hits: [],
   };
+
   onHandleSubmit = query => {
     this.setState({ searchQuery: query });
-    this.searchImages();
   };
 
-  async searchImages() {
-    imageApi.searchQuery = this.state.searchQuery;
-    const res = await imageApi.fetchImages();
-    console.log(res.data.hits);
-    this.setState({ hits: res.data.hits });
-  }
-
   render() {
+    const { searchQuery } = this.state;
     return (
       <div className="App">
         <SearchBar onSubmit={this.onHandleSubmit} />
-        <ul className="gallery"></ul>
+        <ImageGallery query={searchQuery} />
+        <ToastContainer />
       </div>
     );
   }
