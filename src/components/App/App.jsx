@@ -10,6 +10,7 @@ import SearchBar from 'components/Searchbar';
 import ImageGallery from 'components/ImageGallery';
 import Button from 'components/Button';
 import Loader from 'components/Loader';
+import Modal from 'components/Modal';
 
 const imageApi = new ImageApiService();
 
@@ -19,6 +20,33 @@ class App extends Component {
     images: null,
     loading: false,
     endOfSearch: false,
+    showModal: false,
+    currentImage: '',
+    currentImageDescr: '',
+  };
+
+  componentDidMount() {
+    this.setState({ endOfSearch: true });
+  }
+
+  async componentDidUpdate(_, prevState) {
+    if (prevState.searchQuery !== this.state.searchQuery) {
+      this.onSearch();
+    }
+  }
+
+  toggleModal = () => {
+    this.setState(({ showModal }) => ({
+      showModal: !showModal,
+    }));
+  };
+
+  openModal = (image, descr) => {
+    this.setState({
+      showModal: true,
+      currentImage: image,
+      currentImageDescr: descr,
+    });
   };
 
   async onSearch() {
@@ -57,22 +85,24 @@ class App extends Component {
     this.setState({ searchQuery: query });
   };
 
-  componentDidMount() {
-    this.setState({ endOfSearch: true });
-  }
-
-  async componentDidUpdate(_, prevState) {
-    if (prevState.searchQuery !== this.state.searchQuery) {
-      this.onSearch();
-    }
-  }
-
   render() {
-    const { images, loading, endOfSearch } = this.state;
+    const {
+      images,
+      loading,
+      endOfSearch,
+      showModal,
+      currentImage,
+      currentImageDescr,
+    } = this.state;
     return (
       <div className="App">
+        {showModal && (
+          <Modal onClose={this.toggleModal}>
+            <img src={currentImage} alt={currentImageDescr} />
+          </Modal>
+        )}
         <SearchBar onSubmit={this.onHandleSubmit} />
-        {images && <ImageGallery images={images} />}
+        {images && <ImageGallery images={images} openModal={this.openModal} />}
         {loading && <Loader />}
         {!endOfSearch && <Button handleLoadMore={this.onLoadMore} />}
         <ToastContainer
