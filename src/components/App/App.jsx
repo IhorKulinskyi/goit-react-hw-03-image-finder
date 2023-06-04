@@ -5,31 +5,27 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './App.scss';
 
-import ImageApiService from 'services/imageApi';
+import fetchImages from 'services/fetchImages';
 import SearchBar from 'components/Searchbar';
 import ImageGallery from 'components/ImageGallery';
 import Button from 'components/Button';
 import Loader from 'components/Loader';
 import Modal from 'components/Modal';
 
-const imageApi = new ImageApiService();
-
 class App extends Component {
   state = {
     searchQuery: '',
-    images: null,
+    page: 1,
+    totalHits: [],
+    images: [],
     loading: false,
-    endOfSearch: false,
+    endOfSearch: true,
     showModal: false,
     currentImage: '',
     currentImageDescr: '',
   };
 
-  componentDidMount() {
-    this.setState({ endOfSearch: true });
-  }
-
-  async componentDidUpdate(_, prevState) {
+  componentDidUpdate(_, prevState) {
     if (prevState.searchQuery !== this.state.searchQuery) {
       this.onSearch();
     }
@@ -49,40 +45,50 @@ class App extends Component {
     this.toggleModal();
   };
 
-  async onSearch() {
-    imageApi.resetHits();
-    imageApi.resetPageCounter();
-    imageApi.searchQuery = this.state.searchQuery;
-    this.setState({ loading: true });
-    const res = await imageApi.fetchImages();
+  onSearch = async () => {
+    const { searchQuery, page, totalHits } = this.state;
+    this.setState({ images: [], totalHits: [], loading: true });
+    const res = await fetchImages(searchQuery, page);
+    this.setState(({ page }) => ({ page: (page += 1) }));
     if (res.data.hits.length === 0) {
       this.setState({ images: null, loading: false, endOfSearch: true });
       toast.warn('No images found');
       return;
     }
-    this.setState({ endOfSearch: false });
-    imageApi.addHits(res.data.hits);
-    this.setState({ images: res.data.hits, loading: false });
-    if (imageApi.filterHits() === res.data.totalHits) {
+    this.setState({
+      images: res.data.hits,
+      totalHits: res.data.hits,
+      loading: false,
+      endOfSearch: false,
+    });
+
+    const filteredSet = new Set(totalHits.map(JSON.stringify));
+
+    const filteredHits = Array.from(filteredSet).map(JSON.parse).length;
+    if (filteredHits === res.data.totalHits) {
       this.setState({ endOfSearch: true });
     }
-  }
+  };
 
   onLoadMore = async () => {
-    this.setState({ loading: true });
-    const res = await imageApi.fetchImages();
-    imageApi.addHits(res.data.hits);
-    this.setState(prevState => ({
-      images: [...prevState.images, ...res.data.hits],
+    const { searchQuery, page, totalHits } = this.state;
+    const res = await fetchImages(searchQuery, page);
+    this.setState(({ page }) => ({ loading: true, page: (page += 1) }));
+    this.setState(({ totalHits, images, loading }) => ({
+      totalHits: [totalHits, ...res.data.hits],
+      images: [...images, ...res.data.hits],
       loading: false,
     }));
-    if (imageApi.filterHits() === res.data.totalHits) {
+    const filteredSet = new Set(totalHits.map(JSON.stringify));
+
+    const filteredHits = Array.from(filteredSet).map(JSON.parse).length;
+    if (filteredHits === res.data.totalHits) {
       this.setState({ endOfSearch: true });
     }
   };
 
   onHandleSubmit = query => {
-    this.setState({ searchQuery: query });
+    this.setState({ searchQuery: query, page: 1 });
   };
 
   render() {
@@ -102,7 +108,7 @@ class App extends Component {
           </Modal>
         )}
         <SearchBar onSubmit={this.onHandleSubmit} />
-        {images && <ImageGallery images={images} openModal={this.openModal} />}
+        {<ImageGallery images={images} openModal={this.openModal} />}
         {loading && <Loader />}
         {!endOfSearch && <Button handleLoadMore={this.onLoadMore} />}
         <ToastContainer
