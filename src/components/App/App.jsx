@@ -43,10 +43,10 @@ class App extends Component {
 
   openModal = (image, descr) => {
     this.setState({
-      showModal: true,
       currentImage: image,
       currentImageDescr: descr,
     });
+    this.toggleModal();
   };
 
   async onSearch() {

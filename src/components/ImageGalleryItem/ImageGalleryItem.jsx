@@ -1,31 +1,28 @@
 import PropTypes from 'prop-types';
 
 import './ImageGalleryItem.scss';
-import { Component } from 'react';
 
-class ImageGalleryItem extends Component {
-  static propTypes = {
-    url: PropTypes.string.isRequired,
-    descr: PropTypes.string.isRequired,
-    largeImage: PropTypes.string.isRequired,
-  };
+const ImageGalleryItem = ({ url, descr, largeImage, openModal }) => {
+  return (
+    <button
+      type="button"
+      className="ImageWrapperBtn"
+      onClick={() => {
+        openModal(largeImage, descr);
+      }}
+    >
+      <li className="ImageGalleryItem">
+        <img className="ImageGalleryItem-image" src={url} alt={descr} />
+      </li>
+    </button>
+  );
+};
 
-  render() {
-    const { url, descr, largeImage } = this.props;
-    return (
-      <button
-        type="button"
-        className="ImageWrapperBtn"
-        onClick={() => {
-          this.props.openModal(largeImage, descr);
-        }}
-      >
-        <li className="ImageGalleryItem">
-          <img className="ImageGalleryItem-image" src={url} alt={descr} />
-        </li>
-      </button>
-    );
-  }
-}
+ImageGalleryItem.propTypes = {
+  url: PropTypes.string.isRequired,
+  descr: PropTypes.string.isRequired,
+  largeImage: PropTypes.string.isRequired,
+  openModal: PropTypes.func.isRequired,
+};
 
 export default ImageGalleryItem;
