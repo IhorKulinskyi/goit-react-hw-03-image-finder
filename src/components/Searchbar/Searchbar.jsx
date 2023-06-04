@@ -3,6 +3,7 @@ import { toast } from 'react-toastify';
 import { IconContext } from 'react-icons';
 import { AiOutlineSearch } from 'react-icons/ai';
 import PropTypes from 'prop-types';
+
 import './Searchbar.scss';
 
 class SearchBar extends Component {
@@ -18,16 +19,7 @@ class SearchBar extends Component {
   handleSubmit = e => {
     e.preventDefault();
     if (this.state.query.trim() === '') {
-      toast.error('Empty search input', {
-        position: 'top-center',
-        autoClose: 1000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: true,
-        progress: undefined,
-        theme: 'light',
-      });
+      toast.error('Empty search input');
       return;
     }
     this.props.onSubmit(this.state.query);
