@@ -28,20 +28,20 @@ class SearchBar extends Component {
   render() {
     const { query } = this.state;
     return (
-      <header className="Searchbar">
-        <form className="SearchForm" onSubmit={this.handleSubmit}>
-          <button type="submit" className="SearchForm-button">
+      <header className="searchbar">
+        <form className="searchForm" onSubmit={this.handleSubmit}>
+          <button type="submit" className="searchForm-button">
             <IconContext.Provider value={{ className: 'search-icon' }}>
               <AiOutlineSearch />
             </IconContext.Provider>
-            <span className="SearchForm-button-label">Search</span>
+            <span className="searchForm-button-label">Search</span>
           </button>
 
           <input
             name="search"
             onChange={this.handleChange}
             value={query}
-            className="SearchForm-input"
+            className="searchForm-input"
             type="text"
             autoComplete="off"
             autoFocus

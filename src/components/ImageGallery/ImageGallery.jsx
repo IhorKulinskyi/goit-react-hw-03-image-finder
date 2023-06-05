@@ -4,7 +4,7 @@ import './ImageGallery.scss';
 
 const ImageGallery = ({ images, openModal }) => {
   return (
-    <ul className="ImageGallery">
+    <ul className="imageGallery">
       {images.map(({ id, webformatURL, largeImageURL, tags }) => {
         return (
           <ImageGalleryItem

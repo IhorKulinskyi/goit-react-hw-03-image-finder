@@ -6,13 +6,13 @@ const ImageGalleryItem = ({ url, descr, largeImage, openModal }) => {
   return (
     <button
       type="button"
-      className="ImageWrapperBtn"
+      className="imageWrapperBtn"
       onClick={() => {
         openModal(largeImage, descr);
       }}
     >
-      <li className="ImageGalleryItem">
-        <img className="ImageGalleryItem-image" src={url} alt={descr} />
+      <li className="imageGalleryItem">
+        <img className="imageGalleryItem-image" src={url} alt={descr} />
       </li>
     </button>
   );

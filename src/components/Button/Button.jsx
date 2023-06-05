@@ -3,8 +3,8 @@ import './Button.scss';
 
 const Button = ({ handleLoadMore }) => {
   return (
-    <div className="ButtonWrapper">
-      <button className="Button" onClick={handleLoadMore}>
+    <div className="buttonWrapper">
+      <button className="button" onClick={handleLoadMore}>
         Load more
       </button>
     </div>
