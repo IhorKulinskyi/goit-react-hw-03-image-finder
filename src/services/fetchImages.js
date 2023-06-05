@@ -14,8 +14,6 @@ const fetchImages = async (searchQuery, page) => {
       per_page: 12,
     };
     const response = await axios.get(`${BASE_URL}`, { params });
-    // this.page += 1;
-    //   console.log(response.data.hits);
     return response;
   } catch (error) {
     console.log(error);

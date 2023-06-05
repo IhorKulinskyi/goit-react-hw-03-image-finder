@@ -76,6 +76,9 @@ class App extends Component {
   };
 
   onHandleSubmit = query => {
+    if (query === this.state.searchQuery) {
+      return
+    }
     this.setState({
       searchQuery: query,
       page: 1,
